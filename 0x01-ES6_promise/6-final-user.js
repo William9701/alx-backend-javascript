@@ -1,7 +1,7 @@
-import { signUpUser } from "./4-user-promise.js";
-import { uploadPhoto } from "./5-photo-reject";
+import signUpUser from "./4-user-promise";
+import uploadPhoto from "./5-photo-reject";
 
-const handleProfileSignup = (firstName, lastName, fileName) => {
+export default const handleProfileSignup = (firstName, lastName, fileName) => {
   const userPromise = signUpUser(firstName, lastName);
   const photoPromise = uploadPhoto(fileName);
 
@@ -9,9 +9,7 @@ const handleProfileSignup = (firstName, lastName, fileName) => {
     .then((results) => {
       return results.map((result) => ({
         status: result.status,
-        value: result.status === 'fulfilled' ? result.value : result.reason.message,
+        value: result.status === 'fulfilled' ? result.value : String(result.reason),
       }));
     });
 };
-
-export default handleProfileSignup;
