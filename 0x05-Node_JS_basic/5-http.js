@@ -1,58 +1,66 @@
 const http = require('http');
-const fs = require('fs').promises;
+const fs = require('fs');
+const args = require('process').argv;
 
-function countStudents(path) {
-  return fs.readFile(path, 'utf8')
-    .then((data) => {
-      // Remove empty lines
-      const lines = data.split('\n').filter((line) => line);
+function countStudents(filePath) {
+  return new Promise((resolve, reject) => {
+    if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+      reject(new Error('Cannot load the database'));
+    }
 
-      // Remove the header line
-      lines.shift();
+    fs.readFile(filePath, 'utf-8', (err, data) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      const lines = data.trim().split('\n');
+      const removeHeading = lines.slice(1);
 
-      const students = lines.map((line) => ({
-        firstname: line.split(',')[0],
-        field: line.split(',')[3],
-      }));
+      const studentNo = removeHeading.length;
+      const records = {};
+      const results = [];
 
-      let output = `Number of students: ${students.length}\n`;
-      const fields = [...new Set(students.map((student) => student.field))];
+      removeHeading.forEach((val) => {
+        const recordArray = val.split(',');
+        const field = recordArray[recordArray.length - 1];
 
-      fields.forEach((field) => {
-        const studentsInField = students.filter((student) => student.field === field);
-        output += `Number of students in ${field}: ${studentsInField.length}. List: ${studentsInField.map((s) => s.firstname).join(', ')}\n`;
+        if (!Object.keys(records).includes(field)) {
+          records[field] = [recordArray[0]];
+        } else {
+          records[field].push(recordArray[0]);
+        }
       });
 
-      return output;
-    })
-    .catch(() => {
-      throw new Error('Cannot load the database');
+      results.push(`Number of students: ${studentNo}`);
+      Object.keys(records).forEach((key) => {
+        const value = records[key];
+        results.push(`Number of students in ${key}: ${
+          value.length}. List: ${value.join(', ')}`);
+      });
+      resolve(results);
     });
+  });
 }
 
-const hostname = '127.0.0.1';
-const port = 1245;
+const app = http.createServer((request, response) => {
+  response.setHeader('Content-Type', 'text/plain');
 
-const app = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  if (req.url === '/') {
-    res.end('Hello Holberton School!');
-  } else if (req.url === '/students') {
-    countStudents(process.argv[2])
-      .then((output) => {
-        res.end(`This is the list of our students\n${output}`);
+  const { url } = request;
+  if (url === '/') {
+    response.write('Hello Holberton School!');
+    response.end();
+  } else if (url === '/students') {
+    response.write('This is the list of our students\n');
+    countStudents(args[2])
+      .then((result) => {
+        response.write(result.join('\n'));
+        response.end();
       })
       .catch((error) => {
-        res.end(error.message);
+        response.write(error.toString());
+        response.end();
       });
-  } else {
-    res.end('Page not found');
   }
-});
-
-app.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
-});
+}).listen(1245);
 
 module.exports = app;
