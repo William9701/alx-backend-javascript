@@ -1,11 +1,20 @@
 const assert = require("assert");
-const calculateNumber = require("./1-calcul");
+const calculateNumber = require("./1-calcul.js");
 
-describe("calculateNumber", function () {
-  it("should return the calc of rounded a and b", function () {
-    assert.equal(calculateNumber("SUM", 1.4, 2.6), 4);
-    assert.equal(calculateNumber("SUBTRACT", 2.5, 1.4), 2);
-    assert.equal(calculateNumber("DIVIDE", 2.5, 1.4), 3);
-    assert.equal(calculateNumber("DIVIDE", 2.5, 0), "Error");
+describe("calculateNumber function", () => {
+  it("should return the sum of two rounded numbers", () => {
+    assert.strictEqual(calculateNumber("SUM", 1.4, 4.5), 6);
+  });
+
+  it("should return the subtraction of two rounded numbers", () => {
+    assert.strictEqual(calculateNumber("SUBTRACT", 1.4, 4.5), -4);
+  });
+
+  it("should return the division of two rounded numbers", () => {
+    assert.strictEqual(calculateNumber("DIVIDE", 1.4, 4.5), 0.2);
+  });
+
+  it('should return "Error" for division when roundedB is 0', () => {
+    assert.strictEqual(calculateNumber("DIVIDE", 1.4, 0), "Error");
   });
 });
