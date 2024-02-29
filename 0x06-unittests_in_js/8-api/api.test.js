@@ -1,7 +1,6 @@
-// api.test.js
 const chai = require("chai");
 const request = require("request");
-const app = require("./api");
+const app = require("./server");
 
 const expect = chai.expect;
 
