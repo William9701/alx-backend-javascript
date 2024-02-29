@@ -3,18 +3,28 @@ const sendPaymentRequestToApi = require("./3-payment");
 const Utils = require("./utils");
 
 describe("sendPaymentRequestToApi", function () {
-  it("should use the Utils function", function () {
-    const stub = sinon.stub(Utils, "calculateNumber");
-    stub.withArgs("SUM", 100, 20).returns(10);
+  let consoleLogSpy;
 
-    const consoleSpy = sinon.spy(console, "log");
+  beforeEach(function () {
+    consoleLogSpy = sinon.spy(console, "log");
 
+    sinon.stub(Utils, "calculateNumber").returns(10);
+  });
+
+  afterEach(function () {
+    Utils.calculateNumber.restore();
+    consoleLogSpy.restore();
+  });
+
+  it("should use the Utils function with the correct arguments", function () {
     sendPaymentRequestToApi(100, 20);
 
-    sinon.assert.calledWith(stub, "SUM", 100, 20);
-    sinon.assert.calledWith(consoleSpy, "The total is: 10");
+    sinon.assert.calledWith(Utils.calculateNumber, "SUM", 100, 20);
+  });
 
-    stub.restore();
-    consoleSpy.restore();
+  it("should log the correct message", function () {
+    sendPaymentRequestToApi(100, 20);
+
+    sinon.assert.calledWith(consoleLogSpy, "The total is: 10");
   });
 });
