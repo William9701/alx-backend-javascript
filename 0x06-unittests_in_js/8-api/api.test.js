@@ -1,19 +1,28 @@
-const request = require("request");
+// api.test.js
 const chai = require("chai");
+const request = require("request");
+const app = require("./api");
+
 const expect = chai.expect;
-const app = require("./api"); // assuming your express file is named 'api.js'
 
-describe("Test the root path", () => {
-  it("It should respond to the GET method", (done) => {
-    request("http://localhost:7865", function (error, response, body) {
-      expect(response.statusCode).to.equal(200);
-      done();
+describe("API", () => {
+  describe("GET /", () => {
+    it("should return correct status code", (done) => {
+      request.get("http://localhost:7865", (error, response, body) => {
+        expect(response.statusCode).to.equal(200);
+        done();
+      });
     });
-  });
 
-  it("It should return the correct message", (done) => {
-    request("http://localhost:7865", function (error, response, body) {
-      expect(body).to.equal("Welcome to the payment system");
+    it("should return correct result", (done) => {
+      request.get("http://localhost:7865", (error, response, body) => {
+        expect(body).to.equal("Welcome to the payment system");
+        done();
+      });
+    });
+
+    it("should handle other cases", (done) => {
+      // Add your test logic for other cases if needed
       done();
     });
   });
