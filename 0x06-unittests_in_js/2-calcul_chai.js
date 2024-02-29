@@ -1,17 +1,17 @@
 function calculateNumber(type, a, b) {
-  let roundedA = Math.round(a);
-  let roundedB = Math.round(b);
-  if (type == "SUM") {
-    return roundedA + roundedB;
-  }
-  if (type == "SUBTRACT") {
-    return roundedA - roundedB;
-  }
-  if (type == "DIVIDE") {
-    if (roundedB == 0) {
+  if (type === "SUM") {
+    return Math.round(a) + Math.round(b);
+  } else if (type === "SUBTRACT") {
+    return Math.round(a) - Math.round(b);
+  } else if (type === "DIVIDE") {
+    if (Math.round(b) === 0) {
       return "Error";
+    } else {
+      return Math.round(a / b);
     }
-    return roundedA / roundedB;
+  } else {
+    return "Error";
   }
 }
+
 module.exports = calculateNumber;
