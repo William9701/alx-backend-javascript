@@ -1,4 +1,3 @@
-// 4-payment.test.js
 const sinon = require("sinon");
 const assert = require("assert");
 const Utils = require("./utils");
